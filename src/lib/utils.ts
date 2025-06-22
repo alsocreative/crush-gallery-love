@@ -5,9 +5,22 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Utility function to get the correct image src (simplified without base path)
+// Utility function to get the correct image src using JSDelivr CDN
 export const getImageSrc = (src: string) => {
-  return src;
+  const cdnBase = 'https://cdn.jsdelivr.net/gh/alsocreative/crush-gallery-love@main/tee';
+  
+  // If src starts with '/', prepend the CDN base
+  if (src.startsWith('/')) {
+    return `${cdnBase}${src}`;
+  }
+  
+  // If it's already a full URL, return as is
+  if (src.startsWith('http')) {
+    return src;
+  }
+  
+  // Otherwise, assume it's a relative path and add CDN base
+  return `${cdnBase}/${src}`;
 };
 
 // Type definitions for media items
