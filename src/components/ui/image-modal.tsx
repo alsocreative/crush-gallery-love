@@ -1,21 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
+import { MediaItem, getImageSrc } from "@/lib/utils";
 
-interface ImageModalProps {
+interface MediaModalProps {
   isOpen: boolean;
   onClose: () => void;
   imageSrc: string;
   imageAlt: string;
   currentIndex: number;
-  images: Array<{ id: number; src: string; alt: string }>;
+  images: MediaItem[];
   onPrevious: () => void;
   onNext: () => void;
 }
 
-export const ImageModal = ({
+export const MediaModal = ({
   isOpen,
   onClose,
   imageSrc,
@@ -24,7 +25,56 @@ export const ImageModal = ({
   images,
   onPrevious,
   onNext,
-}: ImageModalProps) => {
+}: MediaModalProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
+  const currentMedia = images[currentIndex];
+  const isVideo = currentMedia?.type === 'video';
+
+  // Update video muted state when media changes
+  useEffect(() => {
+    if (isVideo && currentMedia?.muted !== undefined) {
+      setIsVideoMuted(currentMedia.muted);
+    }
+  }, [currentIndex, isVideo, currentMedia]);
+
+  // Handle video controls
+  const handleVideoClick = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsVideoMuted(false); // Unmute on play
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  };
+
+  const handleVideoPlay = () => {
+    setIsVideoMuted(false); // Unmute on play
+  };
+
+  // Auto-play video when modal opens with a video
+  useEffect(() => {
+    if (isOpen && isVideo && videoRef.current) {
+      // Small delay to ensure video element is ready
+      const timer = setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play().catch(error => {
+            console.log('Auto-play prevented:', error);
+          });
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, isVideo, currentIndex]);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isVideoMuted;
+    }
+  }, [isVideoMuted]);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
@@ -96,7 +146,7 @@ export const ImageModal = ({
               onPrevious();
             }}
             className="absolute left-4 z-60 text-white hover:text-pink-300 transition-colors p-3 rounded-full bg-black/50 hover:bg-black/70"
-            aria-label="Previous image"
+            aria-label="Previous media"
           >
             <svg
               width="24"
@@ -119,7 +169,7 @@ export const ImageModal = ({
               onNext();
             }}
             className="absolute right-4 z-60 text-white hover:text-pink-300 transition-colors p-3 rounded-full bg-black/50 hover:bg-black/70"
-            aria-label="Next image"
+            aria-label="Next media"
           >
             <svg
               width="24"
@@ -135,7 +185,7 @@ export const ImageModal = ({
             </svg>
           </button>
 
-          {/* Image Container */}
+          {/* Media Container */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -156,26 +206,89 @@ export const ImageModal = ({
             }}
           >
             <div className="relative w-full h-full flex items-center justify-center">
-              <Image
-                src={imageSrc}
-                alt={imageAlt}
-                width={1200}
-                height={800}
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                priority
-              />
-              {/* Loading overlay could be added here */}
+              {isVideo ? (
+                <div className="relative">
+                  <video
+                    ref={videoRef}
+                    src={getImageSrc(imageSrc)}
+                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl cursor-pointer"
+                    muted={isVideoMuted}
+                    onClick={handleVideoClick}
+                    onPlay={handleVideoPlay}
+                    playsInline
+                    preload="metadata"
+                    loop
+                  />
+                  
+                  {/* Play/Pause button overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleVideoClick();
+                      }}
+                      className="text-white hover:text-pink-300 transition-all duration-300 p-4 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm opacity-0 hover:opacity-100 pointer-events-auto transform hover:scale-110"
+                      aria-label={videoRef.current?.paused ? "Play video" : "Pause video"}
+                    >
+                      {videoRef.current?.paused !== false ? (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                          <polygon points="5,3 19,12 5,21" />
+                        </svg>
+                      ) : (
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16" />
+                          <rect x="14" y="4" width="4" height="16" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                  
+                  {/* Video overlay controls */}
+                  <div className="absolute top-4 left-4 flex gap-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsVideoMuted(!isVideoMuted);
+                      }}
+                      className="text-white hover:text-pink-300 transition-colors p-2 rounded-full bg-black/70 hover:bg-black/90"
+                      aria-label={isVideoMuted ? "Unmute video" : "Mute video"}
+                    >
+                      {isVideoMuted ? (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                          <line x1="23" y1="9" x2="17" y2="15"/>
+                          <line x1="17" y1="9" x2="23" y2="15"/>
+                        </svg>
+                      ) : (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <Image
+                  src={getImageSrc(imageSrc)}
+                  alt={imageAlt}
+                  width={1200}
+                  height={800}
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                  priority
+                />
+              )}
             </div>
           </motion.div>
 
-          {/* Image Counter */}
+          {/* Media Counter */}
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-60 text-white bg-black/50 px-4 py-2 rounded-full">
             <span className="text-sm font-medium">
-              {currentIndex + 1} / {images.length}
+              {currentIndex + 1} / {images.length} {isVideo && "📹"}
             </span>
           </div>
 
-          {/* Image Caption */}
+          {/* Media Caption */}
           <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-60 text-white bg-black/70 px-6 py-3 rounded-lg max-w-[80vw] text-center">
             <p className="text-sm font-medium leading-relaxed">
               {imageAlt}

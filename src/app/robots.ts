@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://alsocreative.github.io/crush-gallery-love/sitemap.xml',
+    sitemap: 'http://localhost:3000/sitemap.xml',
   }
 }

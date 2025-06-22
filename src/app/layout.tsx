@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   title: "Beautiful Moments 💕 | My Love Gallery",
   description: "A curated collection of beautiful portrait photography showcasing elegance and grace. Every photo tells our beautiful story.",
   keywords: "portrait photography, beautiful images, elegant photos, artistic gallery, love gallery",
-  metadataBase: new URL('https://alsocreative.github.io/crush-gallery-love'),
+  metadataBase: new URL('http://localhost:3000'),
   openGraph: {
     title: "Beautiful Moments 💕 | My Love Gallery",
     description: "A curated collection of beautiful portrait photography showcasing elegance and grace",
-    url: "https://alsocreative.github.io/crush-gallery-love",
+    url: "http://localhost:3000",
     siteName: "My Love Gallery",
     type: "website",
   },
@@ -42,7 +42,7 @@ export default function RootLayout({
     name: "Beautiful Moments - Portrait Gallery",
     description:
       "A curated collection of beautiful portrait photography showcasing elegance and grace",
-    url: "https://alsocreative.github.io/crush-gallery-love",
+    url: "http://localhost:3000",
     author: {
       "@type": "Person",
       name: "Gallery Creator",
