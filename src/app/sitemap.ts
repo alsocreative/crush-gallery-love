@@ -5,7 +5,7 @@ export const dynamic = 'force-static'
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: 'https://your-domain.com',
+      url: 'https://alsocreative.github.io/crush-gallery-love',
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,

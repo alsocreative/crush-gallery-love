@@ -13,9 +13,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Beautiful Moments - Portrait Gallery",
-  description: "A curated collection of beautiful portrait photography showcasing elegance and grace",
-  keywords: "portrait photography, beautiful images, elegant photos, artistic gallery",
+  title: "Beautiful Moments 💕 | My Love Gallery",
+  description: "A curated collection of beautiful portrait photography showcasing elegance and grace. Every photo tells our beautiful story.",
+  keywords: "portrait photography, beautiful images, elegant photos, artistic gallery, love gallery",
+  metadataBase: new URL('https://alsocreative.github.io/crush-gallery-love'),
+  openGraph: {
+    title: "Beautiful Moments 💕 | My Love Gallery",
+    description: "A curated collection of beautiful portrait photography showcasing elegance and grace",
+    url: "https://alsocreative.github.io/crush-gallery-love",
+    siteName: "My Love Gallery",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Beautiful Moments 💕 | My Love Gallery",
+    description: "A curated collection of beautiful portrait photography showcasing elegance and grace",
+  },
 };
 
 export default function RootLayout({
@@ -29,7 +42,7 @@ export default function RootLayout({
     name: "Beautiful Moments - Portrait Gallery",
     description:
       "A curated collection of beautiful portrait photography showcasing elegance and grace",
-    url: "https://your-domain.com",
+    url: "https://alsocreative.github.io/crush-gallery-love",
     author: {
       "@type": "Person",
       name: "Gallery Creator",

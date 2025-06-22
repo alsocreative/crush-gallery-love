@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
   trailingSlash: true,
+  basePath: '/crush-gallery-love',
+  assetPrefix: '/crush-gallery-love',
   images: {
     unoptimized: true,
     remotePatterns: [
