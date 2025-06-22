@@ -8,6 +8,7 @@ import {
   GridItem, 
 } from "@/components/ui/infinite-drag-scroll";
 import { ImageModal } from "@/components/ui/image-modal";
+import { getImageSrc } from "@/lib/utils";
 import galleryData from "@/data/webp-gallery.json";
 
 // Use the local gallery images (webp format for browser compatibility)
@@ -70,7 +71,7 @@ export default function Home() {
                 className="relative w-full h-full group overflow-hidden rounded-lg"
               >
                 <Image
-                  src={image.src}
+                  src={getImageSrc(image.src)}
                   alt={image.alt}
                   fill
                   className="object-cover transition-all duration-300 group-hover:scale-110 group-hover:brightness-75"
@@ -117,10 +118,10 @@ export default function Home() {
       <ImageModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        imageSrc={selectedImageIndex !== null ? images[selectedImageIndex].src : ""}
+        imageSrc={selectedImageIndex !== null ? getImageSrc(images[selectedImageIndex].src) : ""}
         imageAlt={selectedImageIndex !== null ? images[selectedImageIndex].alt : ""}
         currentIndex={selectedImageIndex || 0}
-        images={images}
+        images={images.map(img => ({ ...img, src: getImageSrc(img.src) }))}
         onPrevious={handlePreviousImage}
         onNext={handleNextImage}
       />
