@@ -191,7 +191,7 @@ export const MediaModal = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="relative max-w-[90vw] max-h-[90vh] w-full h-full flex items-center justify-center"
+            className="relative w-full h-full flex items-center justify-center p-4"
             onClick={(e) => e.stopPropagation()}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
@@ -205,13 +205,13 @@ export const MediaModal = ({
               }
             }}
           >
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative flex items-center justify-center w-full h-full">
               {isVideo ? (
-                <div className="relative">
+                <div className="relative max-w-full max-h-full">
                   <video
                     ref={videoRef}
                     src={getImageSrc(imageSrc)}
-                    className="max-w-full max-h-full object-contain rounded-lg shadow-2xl cursor-pointer"
+                    className="max-w-[90vw] max-h-[80vh] w-auto h-auto object-contain rounded-lg shadow-2xl cursor-pointer"
                     muted={isVideoMuted}
                     onClick={handleVideoClick}
                     onPlay={handleVideoPlay}
@@ -274,7 +274,7 @@ export const MediaModal = ({
                   alt={imageAlt}
                   width={1200}
                   height={800}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                  className="max-w-[90vw] max-h-[80vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
                   priority
                 />
               )}
