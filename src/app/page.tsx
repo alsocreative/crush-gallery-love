@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { 
   GridBody,
   DraggableContainer,
@@ -11,10 +11,41 @@ import { MediaModal } from "@/components/ui/image-modal";
 import { getImageSrc, MediaItem } from "@/lib/utils";
 import galleryData from "@/data/complete-gallery.json";
 
-// Use the complete media gallery (images and videos)
-const media: MediaItem[] = galleryData.gallery.media as MediaItem[];
+// Shuffle function to randomize array
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 export default function Home() {
+  // Randomize media order on each page load
+  const media: MediaItem[] = useMemo(() => 
+    shuffleArray(galleryData.gallery.media as MediaItem[]), 
+    []
+  );
+  
+  // Random romantic messages for the header
+  const romanticMessages = useMemo(() => [
+    "Every photo tells our beautiful story 💕",
+    "Moments of love captured forever ✨",
+    "Our journey through beautiful memories 🌹",
+    "Each image holds a piece of my heart 💖",
+    "Love stories written in pictures 📸",
+    "Precious moments that take my breath away 🥰",
+    "Every frame is a love letter to you 💌",
+    "Beautiful memories that make my heart flutter 🦋",
+    "Capturing the magic of our love story ✨",
+    "Each photo is a reminder of how lucky I am 🍀"
+  ], []);
+  
+  const randomMessage = useMemo(() => 
+    romanticMessages[Math.floor(Math.random() * romanticMessages.length)],
+    [romanticMessages]
+  );
   const [selectedMediaIndex, setSelectedMediaIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const videoRefs = useRef<{ [key: number]: HTMLVideoElement | null }>({});
@@ -69,7 +100,7 @@ export default function Home() {
             A complete collection of precious moments, memories, and love stories ✨
           </p>
           <p className="text-xs md:text-sm opacity-70 mt-1 italic">
-            &ldquo;Every photo and video tells our beautiful story&rdquo;
+            &ldquo;{randomMessage}&rdquo;
           </p>
         </div>
       </div>

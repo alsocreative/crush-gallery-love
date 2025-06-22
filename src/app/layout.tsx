@@ -17,6 +17,14 @@ export const metadata: Metadata = {
   description: "A curated collection of beautiful portrait photography showcasing elegance and grace. Every photo tells our beautiful story.",
   keywords: "portrait photography, beautiful images, elegant photos, artistic gallery, love gallery",
   metadataBase: new URL('http://localhost:3000'),
+  icons: {
+    icon: [
+      { url: '/heart-favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '16x16' }
+    ],
+    shortcut: '/heart-favicon.svg',
+    apple: '/heart-favicon.svg',
+  },
   openGraph: {
     title: "Beautiful Moments 💕 | My Love Gallery",
     description: "A curated collection of beautiful portrait photography showcasing elegance and grace",
