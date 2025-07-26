@@ -1,14 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useMemo, useEffect, useCallback } from "react";
+import { useState, useRef, useMemo } from "react";
 import { 
   GridBody,
   DraggableContainer,
   GridItem, 
 } from "@/components/ui/infinite-drag-scroll";
 import { MediaModal } from "@/components/ui/image-modal";
-import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { getImageSrc, MediaItem } from "@/lib/utils";
 import galleryData from "@/data/complete-gallery.json";
 
@@ -24,41 +23,10 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 
 export default function Home() {
   // Randomize media order on each page load
-  const allMedia: MediaItem[] = useMemo(() => 
+  const media: MediaItem[] = useMemo(() => 
     shuffleArray(galleryData.gallery.media as MediaItem[]), 
     []
   );
-  
-  // Progressive loading - start with first 20 items
-  const [displayedMedia, setDisplayedMedia] = useState<MediaItem[]>([]);
-  const [loadedCount, setLoadedCount] = useState(20);
-  
-  // Initialize with first batch
-  useEffect(() => {
-    setDisplayedMedia(allMedia.slice(0, loadedCount));
-  }, [allMedia, loadedCount]);
-  
-  // Load more items function
-  const loadMoreItems = useCallback(() => {
-    const nextBatch = 15; // Load 15 more items at a time
-    setLoadedCount(prev => Math.min(prev + nextBatch, allMedia.length));
-  }, [allMedia.length]);
-  
-  // Check if we need to load more items when scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop
-        >= document.documentElement.offsetHeight - 1000 && // Load before reaching bottom
-        loadedCount < allMedia.length
-      ) {
-        loadMoreItems();
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loadedCount, allMedia.length, loadMoreItems]);
   
   // Random romantic messages for the header
   const romanticMessages = useMemo(() => [
@@ -94,14 +62,14 @@ export default function Home() {
 
   const handlePreviousMedia = () => {
     if (selectedMediaIndex !== null) {
-      const newIndex = selectedMediaIndex === 0 ? allMedia.length - 1 : selectedMediaIndex - 1;
+      const newIndex = selectedMediaIndex === 0 ? media.length - 1 : selectedMediaIndex - 1;
       setSelectedMediaIndex(newIndex);
     }
   };
 
   const handleNextMedia = () => {
     if (selectedMediaIndex !== null) {
-      const newIndex = selectedMediaIndex === allMedia.length - 1 ? 0 : selectedMediaIndex + 1;
+      const newIndex = selectedMediaIndex === media.length - 1 ? 0 : selectedMediaIndex + 1;
       setSelectedMediaIndex(newIndex);
     }
   };
@@ -139,7 +107,7 @@ export default function Home() {
 
       <DraggableContainer variant="masonry">
         <GridBody>
-          {displayedMedia.map((mediaItem: MediaItem, index: number) => (
+          {media.map((mediaItem: MediaItem, index: number) => (
             <GridItem
               key={mediaItem.id}
               className="relative h-54 w-36 md:h-96 md:w-64 cursor-pointer hover:shadow-2xl transition-shadow duration-300"
@@ -156,13 +124,10 @@ export default function Home() {
                     muted={mediaItem.muted !== false}
                     loop
                     playsInline
-                    preload="none"
                     onClick={(e) => handleVideoClick(e, index)}
                     onMouseEnter={(e) => {
                       const video = e.currentTarget;
-                      if (video.readyState >= 2) { // Only play if loaded
-                        video.play();
-                      }
+                      video.play();
                     }}
                     onMouseLeave={(e) => {
                       const video = e.currentTarget;
@@ -177,9 +142,6 @@ export default function Home() {
                     alt={mediaItem.alt}
                     fill
                     className="object-cover transition-all duration-300 group-hover:scale-110 group-hover:brightness-75"
-                    loading="lazy"
-                    placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                   />
                 )}
                 
@@ -223,26 +185,16 @@ export default function Home() {
             </GridItem>
           ))}
         </GridBody>
-        
-        {/* Loading indicator */}
-        {loadedCount < allMedia.length && (
-          <div className="flex justify-center items-center py-8">
-            <div className="text-white/70 text-sm flex items-center gap-2">
-              <LoadingSkeleton className="w-6 h-6" />
-              Loading more beautiful memories...
-            </div>
-          </div>
-        )}
       </DraggableContainer>
 
       {/* Fullscreen Media Modal */}
       <MediaModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        imageSrc={selectedMediaIndex !== null ? getImageSrc(allMedia[selectedMediaIndex].src) : ""}
-        imageAlt={selectedMediaIndex !== null ? allMedia[selectedMediaIndex].alt : ""}
+        imageSrc={selectedMediaIndex !== null ? getImageSrc(media[selectedMediaIndex].src) : ""}
+        imageAlt={selectedMediaIndex !== null ? media[selectedMediaIndex].alt : ""}
         currentIndex={selectedMediaIndex || 0}
-        images={allMedia.map((item: MediaItem) => ({ ...item, src: getImageSrc(item.src) }))}
+        images={media.map((item: MediaItem) => ({ ...item, src: getImageSrc(item.src) }))}
         onPrevious={handlePreviousMedia}
         onNext={handleNextMedia}
       />
